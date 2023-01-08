@@ -57,6 +57,9 @@ function _update_odoo_param {
 function _update_odoo_conf_params {
     # Loop over all the "ODOO_" ENV variables (see `<<<` after `done`)
     while read -r env_var; do
+        if [ -z $env_var ]; then
+            continue
+        fi
         # Remove "ODOO_" from ENV variable and convert to lowercase
         odoo_param=${env_var:5}
         odoo_param=${odoo_param,,}
