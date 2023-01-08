@@ -3,8 +3,14 @@ MAINTAINER Elico Corp <webmaster@elico-corp.com>
 
 # Define build constants
 ENV GIT_BRANCH=15.0 \
+  GIT_URL=https://github.com/odoo/odoo.git \
+  GIT_COMMIT=HEAD \
   PYTHON_BIN=python3 \
   SERVICE_BIN=odoo-bin
+
+ARG GIT_COMMIT
+ARG GIT_BRANCH
+ARG GIT_URL
 
 # Set timezone to UTC
 RUN ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime
@@ -33,8 +39,8 @@ RUN /bin/bash -c "mkdir -p /opt/odoo/{etc,sources/odoo,additional_addons,data,ss
 
 # Add Odoo sources and remove .git folder in order to reduce image size
 WORKDIR /opt/odoo/sources
-RUN git clone --depth=1 https://github.com/odoo/odoo.git -b $GIT_BRANCH \
-  && rm -rf odoo/.git
+RUN git clone --depth=1 --single-branch $GIT_URL -b $GIT_BRANCH odoo
+RUN cd odoo && git reset --hard $GIT_COMMIT && rm -rf odoo/.git
 
 ADD sources/odoo.conf /opt/odoo/etc/odoo.conf
 ADD auto_addons /opt/odoo/auto_addons
